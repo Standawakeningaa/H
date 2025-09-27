@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nạp Robux</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h2 { margin-bottom: 10px; }
+    .user { margin-bottom: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .option {
+      border: 2px solid #eee;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      background: #fafafa;
+    }
+    .option:hover { border-color: #ff0066; }
+    .option.active {
+      border-color: red;
+      background: #ffeaea;
+    }
+    .option img {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 8px;
+    }
+    .option span {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #0056ff;
+    }
+    .price { color: #666; }
+    .input-box {
+      margin-bottom: 15px;
+    }
+    .input-box input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      background: #ff0066;
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .btn:hover { background: #e6005c; }
+    /* Popup chung */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .popup-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .popup-buttons button {
+      flex: 1;
+      margin: 0 5px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .cancel-btn { background: #ccc; }
+    .confirm-btn { background: #ff0066; color: white; }
+    .checkmark {
+      font-size: 50px;
+      color: green;
+    }
+    .history {
+      margin-top: 30px;
+    }
+    .history h3 { 
+      margin-bottom: 10px; 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #clearHistory {
+      background:#ff0066;
+      color:#fff;
+      border:none;
+      padding:5px 10px;
+      border-radius:5px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .order {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #f9f9f9;
+      font-size: 14px;
+    }
+    .status-pending {
+      color: orange;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .status-approved {
+      color: green;
+      font-weight: bold;
+    }
+    .pay-method {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .pay-method img {
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Nhận Robux</h2>
+  <div class="user">Xin chào, Giabao18371</div>
+
+  <div class="grid">
+    <div class="option" data-value="20000" data-robux="100">
+      <img src="https://static.wikia.nocookie.net/beluga/images/b/ba/Bobux_but_transparent.png" alt="Robux Logo">
+      <span>100 Robux</span>
+      <div class="price">₫20,000</div>
+    </div>
+    <div class="option" data-value="100000" data-robux="500">
+      <img src="https://static.wikia.nocookie.net/beluga/images/b/ba/Bobux_but_transparent.png" alt="Robux Logo">
+      <span>500 Robux</span>
+      <div class="price">₫100,000</div>
+    </div>
+    <div class="option" data-value="200000" data-robux="1000">
+      <img src="https://static.wikia.nocookie.net/beluga/images/b/ba/Bobux_but_transparent.png" alt="Robux Logo">
+      <span>1,000 Robux</span>
+      <div class="price">₫200,000</div>
+    </div>
+    <div class="option" data-value="1000000" data-robux="5000">
+      <img src="https://static.wikia.nocookie.net/beluga/images/b/ba/Bobux_but_transparent.png" alt="Robux Logo">
+      <span>5,000 Robux</span>
+      <div class="price">₫1,000,000</div>
+    </div>
+  </div>
+
+  <div class="input-box">
+    <input type="number" id="customRobux" placeholder="Nhập số Robux (100 = 20,000₫)">
+  </div>
+  <div class="input-box">
+    <input type="text" id="playerName" placeholder="Nhập tên player Roblox">
+  </div>
+
+  <div class="total">Tổng: ₫0</div>
+  <button class="btn" id="napBtn">Nạp</button>
+
+  <!-- Lịch sử đơn -->
+  <div class="history">
+    <h3>
+      Lịch sử đơn hàng
+      <button id="clearHistory">Xóa lịch sử</button>
+    </h3>
+    <div id="orderList"></div>
+  </div>
+
+  <!-- Popup xác nhận -->
+  <div class="popup" id="confirmPopup">
+    <div class="popup-content">
+      <h3>Xác nhận thanh toán</h3>
+      <p class="pay-method" id="confirmMsg"></p>
+      <div class="popup-buttons">
+        <button class="cancel-btn" id="cancelBtn">Hủy bỏ</button>
+        <button class="confirm-btn" id="confirmBtn">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup thành công -->
+  <div class="popup" id="successPopup">
+    <div class="popup-content">
+      <div class="checkmark">✔</div>
+      <h3>Thanh toán thành công!</h3>
+      <p id="successMsg"></p>
+    </div>
+  </div>
+
+  <script>
+    const options = document.querySelectorAll('.option');
+    const totalEl = document.querySelector('.total');
+    const customInput = document.getElementById('customRobux');
+    const playerName = document.getElementById('playerName');
+    const napBtn = document.getElementById('napBtn');
+    const orderList = document.getElementById('orderList');
+    const clearBtn = document.getElementById('clearHistory');
+
+    const confirmPopup = document.getElementById('confirmPopup');
+    const confirmMsg = document.getElementById('confirmMsg');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+
+    const successPopup = document.getElementById('successPopup');
+    const successMsg = document.getElementById('successMsg');
+
+    let selectedValue = 0;
+    let selectedRobux = 0;
+    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+
+    function saveOrders() {
+      localStorage.setItem("orders", JSON.stringify(orders));
+    }
+
+    function renderOrders() {
+      orderList.innerHTML = "";
+      orders.forEach((order, index) => {
+        const orderDiv = document.createElement("div");
+        orderDiv.classList.add("order");
+        orderDiv.innerHTML = `
+          <div><b>Player:</b> ${order.player}</div>
+          <div><b>Số Robux:</b> ${order.robux}</div>
+          <div><b>Giá tiền:</b> ${order.price}</div>
+          <div><b>Trạng thái:</b> <span class="${order.status === 'pending' ? 'status-pending' : 'status-approved'}">${order.status === 'pending' ? 'Chưa được duyệt' : 'Đã duyệt'}</span></div>
+        `;
+        const statusSpan = orderDiv.querySelector("span");
+        if(order.status === "pending"){
+          statusSpan.addEventListener("click", () => {
+            orders[index].status = "approved";
+            saveOrders();
+            renderOrders();
+          });
+        }
+        orderList.prepend(orderDiv);
+      });
+    }
+
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        options.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        selectedValue = parseInt(opt.dataset.value);
+        selectedRobux = parseInt(opt.dataset.robux);
+        totalEl.textContent = "Tổng: ₫" + selectedValue.toLocaleString();
+        customInput.value = "";
+      });
+    });
+
+    customInput.addEventListener('input', () => {
+      options.forEach(o => o.classList.remove('active'));
+      let robux = parseInt(customInput.value) || 0;
+      selectedRobux = robux;
+      selectedValue = robux * 200; // 1 Robux = 200₫
+      totalEl.textContent = "Tổng: ₫" + selectedValue.toLocaleString();
+    });
+
+    napBtn.addEventListener('click', () => {
+      if (!selectedRobux || !playerName.value) {
+        alert("Vui lòng chọn hoặc nhập số Robux và điền tên player!");
+        return;
+      }
+      confirmMsg.innerHTML = `
+        <img src="https://play-lh.googleusercontent.com/woYAzPCG1I8Z8HXCsdH3diL7oly0N8uth_1g6k7R_9Gu7lbxrsYeriEXLecRG2E9rP0" alt="ZaloPay Logo">
+        Bạn sẽ mất ₫${selectedValue.toLocaleString()} từ ZaloPay: 082*******
+      `;
+      confirmPopup.style.display = "flex";
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      confirmPopup.style.display = "none";
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      confirmPopup.style.display = "none";
+      const newOrder = {
+        player: playerName.value,
+        robux: selectedRobux,
+        price: "₫" + selectedValue.toLocaleString(),
+        status: playerName.value === "Anh12_e" ? "approved" : "pending"
+      };
+      orders.push(newOrder);
+      saveOrders();
+      renderOrders();
+      successMsg.textContent = `${selectedRobux} Robux sẽ được gửi cho ${playerName.value}.`;
+      successPopup.style.display = "flex";
+    });
+
+    successPopup.addEventListener('click', () => {
+      successPopup.style.display = "none";
+    });
+
+    clearBtn.addEventListener('click', () => {
+      if(confirm("Bạn có chắc muốn xóa toàn bộ lịch sử không?")) {
+        orders = [];
+        saveOrders();
+        renderOrders();
+      }
+    });
+
+    renderOrders();
+  </script>
+</body>
+</html>
